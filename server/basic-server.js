@@ -1,3 +1,5 @@
+var handleRequest = require('./request-handler').handleRequest;
+
 /* Import node's http module: */
 var http = require('http');
 
