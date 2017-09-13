@@ -14,6 +14,8 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 
+var messages = [];
+
 /*************************************************************
 
 You should implement your request handler function in this file.
@@ -51,11 +53,15 @@ var requestHandler = function(request, response) {
       statusCode = 200;
     } else if (request.method === 'POST') {
       statusCode = 201;
+      request.addListener('data', function(stringifiedData) {
+        var newMessage = JSON.parse(stringifiedData);
+        messages.push(newMessage);
+      });
     }
     var headers = defaultCorsHeaders;
     headers['Content-Type'] = 'text/json';
     response.writeHead(statusCode, headers);
-    response.end(JSON.stringify({ results: [] }));
+    response.end(JSON.stringify({ results: messages }));
   }
 
 };
