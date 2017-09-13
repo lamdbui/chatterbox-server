@@ -45,34 +45,19 @@ var requestHandler = function(request, response) {
   // console.logs in your code.
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
-  if (request.method === 'GET') {
-    if (request.url === '/classes/messages') {
-      // The outgoing status.
-      var statusCode = 200;
-
-      // See the note below about CORS headers.
-      var headers = defaultCorsHeaders;
-
-      // Tell the client we are sending them plain text.
-      //
-      // You will need to change this if you are sending something
-      // other than plain text, like JSON or HTML.
-      headers['Content-Type'] = 'text/json';
-
-      // .writeHead() writes to the request line and headers of the response,
-      // which includes the status and all headers.
-      response.writeHead(statusCode, headers);
-
-      // Make sure to always call response.end() - Node may not send
-      // anything back to the client until you do. The string you pass to
-      // response.end() will be the body of the response - i.e. what shows
-      // up in the browser.
-      //
-      // Calling .end "flushes" the response's internal buffer, forcing
-      // node to actually send all the data over to the client.
-      response.end(JSON.stringify({a:1}));
+  if (request.url === '/classes/messages') {
+    var statusCode;
+    if (request.method === 'GET') {
+      statusCode = 200;
+    } else if (request.method === 'POST') {
+      statusCode = 201;
     }
+    var headers = defaultCorsHeaders;
+    headers['Content-Type'] = 'text/json';
+    response.writeHead(statusCode, headers);
+    response.end(JSON.stringify({ results: [] }));
   }
+
 };
 
 
