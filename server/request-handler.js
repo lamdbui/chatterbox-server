@@ -46,9 +46,12 @@ var requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
+  
+  var statusCode = 404;
+  var headers = defaultCorsHeaders;
 
   if (request.url === '/classes/messages') {
-    var statusCode;
+    
     if (request.method === 'GET') {
       statusCode = 200;
     } else if (request.method === 'POST') {
@@ -58,11 +61,14 @@ var requestHandler = function(request, response) {
         messages.push(newMessage);
       });
     }
-    var headers = defaultCorsHeaders;
     headers['Content-Type'] = 'text/json';
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify({ results: messages }));
   }
+  
+  headers['Content-Type'] = 'text/plain';
+  response.writeHead(statusCode, headers);
+  response.end();
 
 };
 
