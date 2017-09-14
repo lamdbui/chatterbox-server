@@ -57,21 +57,15 @@ var requestHandler = function(request, response) {
       statusCode = 200;
     } else if (request.method === 'POST') {
       statusCode = 201;
-      // request.addListener('data', function(stringifiedData) {
-      //   var newMessage = JSON.parse(stringifiedData);
-      //   messages.push(newMessage);
-      // });
       request.on('data', function(data) {
-        console.log('DATA', typeof data);
-        console.log('MOO', data.toString('ascii'));
-        messages.push(querystring.parse(data.toString('ascii')));
-        console.log(messages);
+        var newMessage = querystring.parse(data.toString());
+        newMessage.objectId = messages.length;
+        messages.push(newMessage);
       });
     }
     headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
-    response.end(JSON.stringify({ results: messages }));
-    // response.end({ results: messages });
+    response.end(Buffer.from(JSON.stringify({ results: messages })));
   } else {
     headers['Content-Type'] = 'text/plain';
     response.writeHead(statusCode, headers);
