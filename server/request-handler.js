@@ -50,10 +50,12 @@ var requestHandler = function(request, response) {
   // console.logs in your code.
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
-  var statusCode = 404;
+  var statusCode;
   var headers = defaultCorsHeaders;
+  var queryIndex = request.url.indexOf('?');
+  var requestUrl = (queryIndex === -1) ? request.url : request.url.slice(0, queryIndex);
 
-  if (request.url.includes('/classes/messages')) {
+  if (requestUrl === '/classes/messages') {
     if (request.method === 'GET' || request.method === 'OPTIONS') {
       statusCode = 200;
     } else if (request.method === 'POST') {
@@ -67,21 +69,23 @@ var requestHandler = function(request, response) {
     headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
     response.end(Buffer.from(JSON.stringify({ results: messages })));
-  } else if (request.url === '/') {
-    statusCode = 200;
-    headers['Content-Type'] = 'text/html';
-    response.writeHead(statusCode, headers);
-    fs.readFile('../client/hrsf81-chatterbox-client/client/index.html', (err, data) => {
-      if (err) {
-        throw err;
-      }
-      console.log(data);
-      response.end(data);
-    });
   } else {
-    headers['Content-Type'] = 'text/plain';
-    response.writeHead(statusCode, headers);
-    response.end();
+    const baseUrl = '../client/hrsf81-chatterbox-client/client';
+    var fileUrl = (requestUrl === '/') ? baseUrl + '/index.html' : baseUrl + requestUrl;
+    fs.readFile(fileUrl, (err, data) => {
+      if (err) {
+        statusCode = 404;
+        headers['Content-Type'] = 'text/plain';
+        response.writeHead(statusCode, headers);
+        response.end();
+        // throw err;
+      } else {
+        statusCode = 200;
+        headers['Content-Type'] = 'text/html';
+        response.writeHead(statusCode, headers);
+        response.end(data);
+      }
+    });
   }
 };
 
