@@ -64,13 +64,11 @@ var requestHandler = function(request, response) {
     headers['Content-Type'] = 'text/json';
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify({ results: messages }));
+  } else {
+    headers['Content-Type'] = 'text/plain';
+    response.writeHead(statusCode, headers);
+    response.end();
   }
-  
-  headers['Content-Type'] = 'text/plain';
-  response.writeHead(statusCode, headers);
-  response.end();
-
 };
 
-
-exports.handleRequest = requestHandler;
+exports.requestHandler = requestHandler;
