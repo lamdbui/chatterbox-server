@@ -1,3 +1,5 @@
+const querystring = require('querystring');
+
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
 // are on different domains, for instance, your chat client.
@@ -46,24 +48,30 @@ var requestHandler = function(request, response) {
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
-  
+
   var statusCode = 404;
   var headers = defaultCorsHeaders;
 
-  if (request.url === '/classes/messages') {
-    
-    if (request.method === 'GET') {
+  if (request.url.includes('/classes/messages')) {
+    if (request.method === 'GET' || request.method === 'OPTIONS') {
       statusCode = 200;
     } else if (request.method === 'POST') {
       statusCode = 201;
-      request.addListener('data', function(stringifiedData) {
-        var newMessage = JSON.parse(stringifiedData);
-        messages.push(newMessage);
+      // request.addListener('data', function(stringifiedData) {
+      //   var newMessage = JSON.parse(stringifiedData);
+      //   messages.push(newMessage);
+      // });
+      request.on('data', function(data) {
+        console.log('DATA', typeof data);
+        console.log('MOO', data.toString('ascii'));
+        messages.push(querystring.parse(data.toString('ascii')));
+        console.log(messages);
       });
     }
-    headers['Content-Type'] = 'text/json';
+    headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify({ results: messages }));
+    // response.end({ results: messages });
   } else {
     headers['Content-Type'] = 'text/plain';
     response.writeHead(statusCode, headers);
