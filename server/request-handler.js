@@ -1,4 +1,5 @@
 const querystring = require('querystring');
+const fs = require('fs');
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
@@ -66,6 +67,17 @@ var requestHandler = function(request, response) {
     headers['Content-Type'] = 'application/json';
     response.writeHead(statusCode, headers);
     response.end(Buffer.from(JSON.stringify({ results: messages })));
+  } else if (request.url === '/') {
+    statusCode = 200;
+    headers['Content-Type'] = 'text/html';
+    response.writeHead(statusCode, headers);
+    fs.readFile('../client/hrsf81-chatterbox-client/client/index.html', (err, data) => {
+      if (err) {
+        throw err;
+      }
+      console.log(data);
+      response.end(data);
+    });
   } else {
     headers['Content-Type'] = 'text/plain';
     response.writeHead(statusCode, headers);
