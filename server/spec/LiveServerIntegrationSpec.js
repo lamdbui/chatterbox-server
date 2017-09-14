@@ -73,5 +73,34 @@ describe('server', function() {
     });
   });
 
+  it('should respond with all messages that were previously posted', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Clara',
+        message: 'Happy Cow!'}
+    };
+
+    var requestParams2 = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Lam',
+        message: 'Do not use the Google!'}
+    };
+
+    request(requestParams, function(error, response, body) {
+      // Now if we request the log, that message we posted should be there:
+      request(requestParams2, function(error, response, body) {
+        request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+          var messages = JSON.parse(body).results;
+          expect(messages[messages.length - 2].username).to.equal('Clara');
+          expect(messages[messages.length - 2].message).to.equal('Happy Cow!');
+          expect(messages[messages.length - 1].username).to.equal('Lam');
+          expect(messages[messages.length - 1].message).to.equal('Do not use the Google!');
+          done();
+        });
+      });
+    });
+  });
 
 });
