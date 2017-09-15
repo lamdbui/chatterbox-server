@@ -1,5 +1,6 @@
 const querystring = require('querystring');
 const fs = require('fs');
+const mime = require('mime-types');
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
@@ -78,10 +79,9 @@ var requestHandler = function(request, response) {
         headers['Content-Type'] = 'text/plain';
         response.writeHead(statusCode, headers);
         response.end();
-        // throw err;
       } else {
         statusCode = 200;
-        headers['Content-Type'] = 'text/html';
+        headers['Content-Type'] = mime.lookup(fileUrl);
         response.writeHead(statusCode, headers);
         response.end(data);
       }
